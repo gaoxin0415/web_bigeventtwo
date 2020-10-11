@@ -9,52 +9,58 @@ $(function () {
 })
 //  1  封装获取用户信息
 var layer = layui.layer;
+// 获取用户的基本信息
 function getUserInfo() {
-    // ajax发送请求
     $.ajax({
         method: 'GET',
         url: '/my/userinfo',
-        // header请求头配置对象(请求认证)
+        // headers 就是请求头配置对象
         // headers: {
-        //     Authorization: localStorage.getItem('token') || '',
+        //     Authorization: localStorage.getItem('token') || ''
         // },
         success: function (res) {
-            // 认证是否成功
-            console.log(res);
             if (res.status !== 0) {
-                return layer.msg(res.message);
+                return layui.layer.msg('获取用户信息失败！')
             }
-            layer.msg('获取用户信息成功');
-            renderAvatar(res.data);
-        },
-        // 每次请求都得判断太麻烦，同意设置
-        // complete: function (res) {
-        //     // console.log('执行了 complete 回调：')
-        //     // console.log(res)
-        //     // 在 complete 回调函数中，可以使用 res.responseJSON 拿到服务器响应回来的数据
-        //     if (res.responseJSON.status === 1 && res.responseJSON.message === '身份认证失败！') {
-        //         localStorage.removeItem('token');
-        //         location.href = '/login.html'
-        //     }
-        // }
-
+            // 调用 renderAvatar 渲染用户的头像
+            renderAvatar(res.data)
+        }
     })
 }
-//2 渲染用户头像
-function renderAvatar(user) {
-    // 获取用户名称
-    var name = user.nickname || user.username;
-    // 设置欢迎文本
-    $('#welcome').html('欢迎&nbsp&nbsp;' + name);
-    if (user.user_pic !== null) {
-        $('.layui-nav-img').attr('src', 'user.user_pic').show();
-        $('.text-avatar').hide();
-    } else {
-        $('.layui-nav-img').hide();
-        var first = name[0].toUpperCase();
-        $('.text-avatar').html(first).show();
-    }
+// 每次请求都得判断太麻烦，同意设置
+// complete: function (res) {
+//     // console.log('执行了 complete 回调：')
+//     // console.log(res)
+//     // 在 complete 回调函数中，可以使用 res.responseJSON 拿到服务器响应回来的数据
+//     if (res.responseJSON.status === 1 && res.responseJSON.message === '身份认证失败！') {
+//         localStorage.removeItem('token');
+//         location.href = '/login.html'
+//     }
+// }
 
+
+//2 渲染用户头像
+
+function renderAvatar(user) {
+    // 1. 获取用户的名称
+    var name = user.nickname || user.username
+    // 2. 设置欢迎的文本
+    $('#welcome').html('欢迎&nbsp;&nbsp;' + name)
+    // 3. 按需渲染用户的头像
+    if (user.user_pic !== null) {
+        // 3.1 渲染图片头像
+        $('.layui-nav-img')
+            .attr('src', user.user_pic)
+            .show()
+        $('.text-avatar').hide()
+    } else {
+        // 3.2 渲染文本头像
+        $('.layui-nav-img').hide()
+        var first = name[0].toUpperCase()
+        $('.text-avatar')
+            .html(first)
+            .show()
+    }
 }
 
 // 实现退出功能
